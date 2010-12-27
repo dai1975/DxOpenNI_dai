@@ -1,0 +1,43 @@
+= ユーザーの扱い
+OpenNI でユーザーにIDを振る。
+認識しているから画面から出て入りなおしても同じIDが振られるらしい。
+
+現状のコードは一人のみを使うようになっている。
+例えば、最初の認識のところは OpenNI から次のようなコールバックで駆動する。
+  void XN_CALLBACK_TYPE User_NewUser(xn::UserGenerator&,XnUserID,void*);
+  void XN_CALLBACK_TYPE User_LostUser(xn::UserGenerator&,XnUserID,void*);
+  void XN_CALLBACK_TYPE UserCalibration_CalibrationStart(xn::SkeletonCapability&,XnUserID,void*);
+  void XN_CALLBACK_TYPE UserCalibration_CalibrationEnd(xn::SkeletonCapability&,XnUserID,XnBool,void*);
+  void XN_CALLBACK_TYPE UserPose_PoseDetected(xn::PoseDetectionCapability&,const XnChar*,XnUserID,void*);
+パラメータで変化はあるが、ユーザー認識→ポーズ認識→キャリブレーション開始→キャリブレーション終了の流れ。
+キャリブレーション終了時に、
+  g_UserGenerator.GetSkeletonCap().StartTracking(nId);
+をして、トラッキングを開始している。
+DLL側ではユーザー固有の情報は使っていないので、複数ユーザーが操作しても問題無く処理される。
+
+一方で、おそらくフレーム毎に呼ばれる DLL 公開関数 OpenNIDrawDepthMap がある。
+  __declspec(dllexport) void __stdcall OpenNIDrawDepthMap(bool waitflag)
+関数の前半は右上の画像を描いているようなので飛ばして、後半
+  XnUserID aUsers[15];
+  XnUInt16 nUsers = 15;
+  g_UserGenerator.GetUsers(aUsers, nUsers);
+  for(int i=0;i<nUsers;++i){
+    if(g_UserGenerator.GetSkeletonCap().IsTracking(aUsers[i])){
+      ... //位置情報の取得
+      break;
+    }
+  }
+で、Tracking になっている最初のユーザーのみを処理している。
+
+= デザイン
+まず、ユーザー毎にオブジェクトを作ることになろう。
+
+OpenNI デバイスに対応した一つのオブジェクトも要る。
+初期化時に UserGenerator#RegisterUserCallback() でコールバック登録をしているので、
+OpenNI は複数の UserGenerator を扱うことは可能であろう。
+複数センサーは後方の認識に使えるので、考えておこう。
+複数センサーといっても一つのシステムとして扱うわけで、システム相当のオブジェクトが一つ。
+内部に複数のセンサーデバイス、さらにセンサーに複数の人物情報。
+といった構造かな。
+
+
