@@ -1,4 +1,7 @@
-DXOpenNI.dll is a driver to read the position of the joint from Kinect.
+DxOpenNI.dll ver 1.10
+
+
+DxOpenNI.dll is a driver to read the position of the joint from Kinect.
 Person's depth information can be drawn as a texture of DirectX. 
 
 It is also possible that this driver uses as a plug-in of MikuMikuDance. 

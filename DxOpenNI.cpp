@@ -1,4 +1,4 @@
-// DxOpenNI.cpp
+// DxOpenNI  Version 1.10
 //  Dinamic link library of OpenNI for DirectX named DxOpenNI.dll
 //
 //   This program is modified from OpenNI driver.
@@ -28,7 +28,7 @@ __declspec(dllexport) void __stdcall OpenNIDrawDepthMap(bool);
 __declspec(dllexport) void __stdcall OpenNIDepthTexture(IDirect3DTexture9**);
 __declspec(dllexport) void __stdcall OpenNIGetSkeltonJointPosition(int,D3DXVECTOR3*);
 __declspec(dllexport) void __stdcall OpenNIIsTracking(bool*);
-
+__declspec(dllexport) void __stdcall OpenNIGetVersion(float*);
 
 
 // include libraries
@@ -366,10 +366,15 @@ __declspec(dllexport) void __stdcall OpenNIDrawDepthMap(bool waitflag)
 				TrCount[i]++;
 				if(TrCount[i]==4){
 					TrackingF=true;
-					g_UserGenerator.GetSkeletonCap().GetSkeletonJointPosition(aUsers[i], XN_SKEL_TORSO, BP_Zero);
+					XnSkeletonJointPosition sjp1,sjp2;
+					g_UserGenerator.GetSkeletonCap().GetSkeletonJointPosition(aUsers[i], XN_SKEL_LEFT_HIP,sjp1);
+					g_UserGenerator.GetSkeletonCap().GetSkeletonJointPosition(aUsers[i], XN_SKEL_RIGHT_HIP,sjp2);
+					BP_Zero.position.X=(sjp1.position.X+sjp2.position.X)/2.0f;
+					BP_Zero.position.Y=(sjp1.position.Y+sjp2.position.Y)/2.0f;
+					BP_Zero.position.Z=(sjp1.position.Z+sjp2.position.Z)/2.0f;
 				}
 			}
-			PosCalc(aUsers[i],XN_SKEL_TORSO,&BP_Vector[0]);
+//			PosCalc(aUsers[i],XN_SKEL_TORSO,&BP_Vector[0]);
 			PosCalc(aUsers[i],XN_SKEL_NECK,&BP_Vector[1]);
 			PosCalc(aUsers[i],XN_SKEL_HEAD,&BP_Vector[2]);
 			PosCalc(aUsers[i],XN_SKEL_LEFT_SHOULDER,&BP_Vector[3]);
@@ -384,6 +389,7 @@ __declspec(dllexport) void __stdcall OpenNIDrawDepthMap(bool waitflag)
 			PosCalc(aUsers[i],XN_SKEL_RIGHT_HIP,&BP_Vector[12]);
 			PosCalc(aUsers[i],XN_SKEL_RIGHT_KNEE,&BP_Vector[13]);
 			PosCalc(aUsers[i],XN_SKEL_RIGHT_FOOT,&BP_Vector[14]);
+			BP_Vector[0] = (BP_Vector[9] + BP_Vector[12])/2.0f;
 			break;
 		}else{
 			TrCount[i]=0;
@@ -408,4 +414,10 @@ __declspec(dllexport) void __stdcall OpenNIIsTracking(bool* lpb)
 {
 	if(TrackingF) *lpb = true;
 	else		  *lpb = false;
+}
+
+// GetVersion()
+__declspec(dllexport) void __stdcall OpenNIGetVersion(float* ver)
+{
+	*ver = 1.10f;
 }
