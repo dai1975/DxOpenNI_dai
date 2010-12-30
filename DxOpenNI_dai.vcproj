@@ -18,7 +18,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory=".\MikuMikuDance\Data"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
 			CharacterSet="1"
@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)\DxOpenNI.dll"
+				OutputFile=".\MikuMikuDance\Data\DxOpenNI.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;D:\Program Files (x86)\OpenNI\Lib&quot;"
 				GenerateDebugInformation="true"
@@ -117,10 +117,11 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
+				AdditionalIncludeDirectories="&quot;D:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include&quot;;&quot;D:\Program Files (x86)\OpenNI\Include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;DXOPENNI_DAI_EXPORTS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
-				UsePrecompiledHeader="2"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="3"
 			/>
@@ -135,7 +136,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				OutputFile=".\MikuMikuDance\Data\DxOpenNI.dll"
 				LinkIncremental="1"
+				AdditionalLibraryDirectories="&quot;D:\Program Files (x86)\OpenNI\Lib&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -170,6 +173,18 @@
 	<Files>
 		<File
 			RelativePath=".\DxOpenNI.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\DxOpenNI.h"
+			>
+		</File>
+		<File
+			RelativePath=".\NICommonParam.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\NICommonParam.h"
 			>
 		</File>
 		<File

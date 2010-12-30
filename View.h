@@ -3,6 +3,8 @@
 
 #include <windows.h>
 
+namespace DxOpenNI {
+
 class NISystem;
 class View
 {
@@ -14,18 +16,19 @@ public:
 	bool onDetach(HINSTANCE h);
 	bool Setup(HWND parent);
 	void Clean();
-	LRESULT onWindowMessage(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp);
+	LRESULT OnWindowMessage(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp);
 	void RunWindowThread();
+	void Repaint();
 
 protected:
-	LRESULT onPaint();
-	LRESULT onCreate(LPCREATESTRUCT);
-	LRESULT onButtonDown(UINT msg);
+	LRESULT OnPaint();
+	LRESULT OnCreate(LPCREATESTRUCT);
+	LRESULT OnButtonDown(UINT msg);
+	LRESULT OnScroll(HWND hWnd, int sb, int nPos);
 
 protected:
 	bool CreateMainWindow();
 	bool LayoutWidgets();
-	HWND CreateButton(int id, HWND hParent, LPCTSTR str, int x, int y, int w, int h);
 
 private:
 	bool StartWindowThread();
@@ -35,15 +38,18 @@ private:
 	RunState m_run;
 
 private:
-	HINSTANCE m_hInstance;
-	HWND m_hWnd;
-	ATOM m_atom;
-
 	NISystem* m_model;
-	HWND m_hButton1;
+
+	HINSTANCE m_hInstance;
+	ATOM m_atom;
+	HWND m_hWnd;
+	HFONT m_hFont;
+
+	HWND m_hStat;
+	HWND m_hHistoryName, m_hHistoryValue, m_hHistoryBar;
 };
 
-
+}
 
 #endif
 

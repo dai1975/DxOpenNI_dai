@@ -1,6 +1,12 @@
 #include "NISystem.h"
 
+namespace DxOpenNI {
+
 namespace {
+	enum {
+		NCOLORS = 10,
+	};
+	static XnFloat DepthColors[][3] ={{0,1,1},{0,0,1},{0,1,0},{1,1,0},{1,0,0},{1,.5,0},{.5,1,0},{0,.5,1},{.5,0,1},{1,1,.5},{1,1,1}};
 
 void printError(HWND hWnd,const char *name, XnStatus nRetVal)
 {
@@ -223,7 +229,7 @@ void NISystem::OnCalibrationEnd(xn::SkeletonCapability& capability, XnUserID nId
 		if (data == NULL) {
 			for (size_t i=0; i<m_Users.size(); ++i) {
 				if (m_Users[i]->IsBind()) { continue; }
-				if (! m_Users[i]->Bind(nId)) { continue; }
+				if (! m_Users[i]->Bind(nId, &m_commonParam)) { continue; }
 				data = m_Users[i];
 				break;
 			}
@@ -254,20 +260,8 @@ void NISystem::Turn(bool waitflag)
 	UpdateSkeleton();
 }
 
-/*
-XnBool					g_bDrawPixels = TRUE;
-XnBool					g_bDrawBackground = FALSE;
-XnBool					g_bQuit = FALSE;
-int						texWidth;
-int						texHeight;
-XnBool					TrackingF = FALSE;
-XnFloat					Colors[][3] ={{0,1,1},{0,0,1},{0,1,0},{1,1,0},{1,0,0},{1,.5,0},{.5,1,0},{0,.5,1},{.5,0,1},{1,1,.5},{1,1,1}};
-*/
-static XnFloat Colors[][3] ={{0,1,1},{0,0,1},{0,1,0},{1,1,0},{1,0,0},{1,.5,0},{.5,1,0},{0,.5,1},{.5,0,1},{1,1,.5},{1,1,1}};
-
 void NISystem::DrawDepthMap(bool waitflag)
 {
-
 	xn::SceneMetaData sceneMD;
 	xn::DepthMetaData depthMD;
 	m_DepthGenerator.GetMetaData(depthMD);
@@ -333,9 +327,9 @@ void NISystem::DrawDepthMap(bool waitflag)
 					if(nValue != 0){
 						nHistValue = (UINT)(m_pDepthHist[nValue]);
 
-						pDestImage[0] = (UINT)(nHistValue * Colors[nColorID][0]); 
-						pDestImage[1] = (UINT)(nHistValue * Colors[nColorID][1]);
-						pDestImage[2] = (UINT)(nHistValue * Colors[nColorID][2]);
+						pDestImage[0] = (UINT)(nHistValue * DepthColors[nColorID][0]); 
+						pDestImage[1] = (UINT)(nHistValue * DepthColors[nColorID][1]);
+						pDestImage[2] = (UINT)(nHistValue * DepthColors[nColorID][2]);
 						pDestImage[3] = 255;
 					}
 				}
@@ -391,19 +385,58 @@ void NISystem::UpdateSkeleton()
 	m_target->Update(m_UserGenerator);
 }
 
-void NISystem::GetDepthTexture(IDirect3DTexture9** lpTex)
+void NISystem::SetRangePos(CONTROL c, int pos)
 {
-	*lpTex = m_pDepthTex;
-}
-
-void NISystem::IsTracking(bool* lpb)
-{
-	*lpb = (m_target != NULL && m_target->IsReady());
-}
-
-void NISystem::GetJointPosition(int num,D3DXVECTOR3* vec)
-{
-	if (m_target) {
-		m_target->GetJointPosition(num, vec);
+	switch (c)
+	{
+	case C_HISTORY_SIZE:
+		if (! m_commonParam.SetHistorySizePow(pos)) { return; }
+		if (m_target) {
+			m_target->ClearCache();
+		}
+		break;
+	default:
+		return;
 	}
+	m_view.Repaint();
+}
+
+void NISystem::PlusRangePos(CONTROL c, int d)
+{
+	switch (c)
+	{
+	case C_HISTORY_SIZE:
+		if (! m_commonParam.PlusHistorySizePow(d)) { return; }
+		if (m_target) {
+			m_target->ClearCache();
+		}
+		break;
+	default:
+		return;
+	}
+	m_view.Repaint();
+}
+
+tc_string NISystem::GetRangeString(CONTROL c) const
+{
+	switch (c)
+	{
+	case C_HISTORY_SIZE:
+		return m_commonParam.GetHistorySizeString();
+	}
+	return tc_string();
+}
+
+void NISystem::GetRange(CONTROL c, int* min, int* max, int* pos) const
+{
+	switch (c)
+	{
+	case C_HISTORY_SIZE:
+		*min = NICommonParam::MIN_HISTORY_POW;
+		*max = NICommonParam::MAX_HISTORY_POW;
+		*pos = m_commonParam.GetHistorySizePow();
+		break;
+	}
+}
+
 }

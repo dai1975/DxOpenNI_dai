@@ -43,7 +43,7 @@ __declspec(dllexport) void __stdcall OpenNIGetVersion(float*);
 #pragma comment(lib, "openNI.lib")
 
 // global variables
-NISystem g_system;
+DxOpenNI::NISystem g_system;
 
 // DllMain
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
