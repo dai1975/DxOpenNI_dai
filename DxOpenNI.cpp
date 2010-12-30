@@ -28,15 +28,6 @@
 #include <d3dx9.h>
 #include "NISystem.h"
 
-// export functions
-__declspec(dllexport) bool __stdcall OpenNIInit(HWND,bool,LPDIRECT3DDEVICE9,WCHAR*);
-__declspec(dllexport) void __stdcall OpenNIClean();
-__declspec(dllexport) void __stdcall OpenNIDrawDepthMap(bool);
-__declspec(dllexport) void __stdcall OpenNIDepthTexture(IDirect3DTexture9**);
-__declspec(dllexport) void __stdcall OpenNIGetSkeltonJointPosition(int,D3DXVECTOR3*);
-__declspec(dllexport) void __stdcall OpenNIIsTracking(bool*);
-__declspec(dllexport) void __stdcall OpenNIGetVersion(float*);
-
 
 
 // include libraries
@@ -56,7 +47,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 
 	case DLL_PROCESS_DETACH: //0
 		g_system.OnDetach(hinstDLL);
-		OpenNIClean();
+		g_system.Clean();
 		break;
 
 	case DLL_THREAD_ATTACH: //2

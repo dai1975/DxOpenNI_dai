@@ -27,6 +27,21 @@ enum JOINT_INDEX
 	NUM_JOINT,
 };
 
+// export functions
+#if defined(DXOPENNI_EXPORTS)
+  #define _DXOPENNI_DLLFUNC __declspec(dllexport)
+#else
+  #define _DXOPENNI_DLLFUNC __declspec(dllimport)
+#endif
+
+_DXOPENNI_DLLFUNC bool __stdcall OpenNIInit(HWND,bool,LPDIRECT3DDEVICE9,WCHAR*);
+_DXOPENNI_DLLFUNC void __stdcall OpenNIClean();
+_DXOPENNI_DLLFUNC void __stdcall OpenNIDrawDepthMap(bool);
+_DXOPENNI_DLLFUNC void __stdcall OpenNIDepthTexture(IDirect3DTexture9**);
+_DXOPENNI_DLLFUNC void __stdcall OpenNIGetSkeltonJointPosition(int,D3DXVECTOR3*);
+_DXOPENNI_DLLFUNC void __stdcall OpenNIIsTracking(bool*);
+_DXOPENNI_DLLFUNC void __stdcall OpenNIGetVersion(float*);
+
 }
 
 #endif

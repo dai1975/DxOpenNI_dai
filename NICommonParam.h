@@ -19,7 +19,7 @@ public:
 
 	enum {
 		MIN_HISTORY = 1,
-		MAX_HISTORY = 256,//128,
+		MAX_HISTORY = 128,
 		MIN_HISTORY_POW = 0,
 		MAX_HISTORY_POW = 7,
 	};
